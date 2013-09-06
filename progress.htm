@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Progress Bar</title>
+<script type="text/javascript" src="PB.js"></script>
+    <script type="text/javascript">
+        var i = 0;
+        var res = 0;
+        var context = null;
+		var pb1 = new PB(20,40,400,24,function(){},function(){});
+		var pb2 = new PB(20,90,200,34,function(){},function(){});
+		var pb3 = new PB(20,140,500,54,function(){},function(){});
+		
+        window.onload = function() {
+            var elem = document.getElementById('myCanvas');
+            if (!elem || !elem.getContext) {
+                return;
+            }
+            context = elem.getContext('2d');
+            if (!context) {
+                return;
+            }
+
+			pb2.leftToRight = false;
+			
+            res = setInterval(draw, 30);
+			 function draw() {
+            i+=1;
+			//console.log(pb1.percentage);
+			pb1.render(context);
+			pb1.percentage = i;
+			pb2.render(context);
+			pb2.percentage = i;
+			pb3.render(context);
+			pb3.percentage = i;
+			if (i > 99){i = -1}
+            
+        }
+        }
+
+       
+
+     
+    </script>
+
+</head>
+<body>
+   
+    <p>
+
+        <canvas id="myCanvas" width="600" height="450">Your browser does not have support for canvas.</canvas>
+    </p>
+
+</body>
+</html>
