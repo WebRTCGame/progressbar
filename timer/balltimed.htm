@@ -10,6 +10,7 @@ html, body {
   background: #171819;
 }
 </style>
+<script type="text/javascript" src="Keymage.js"></script>
 <script type="text/javascript" src="Utility.js"></script>
 <script type="text/javascript" src="Timer.js"></script>
 <script type="text/javascript" src="Pie.js"></script>
@@ -72,7 +73,13 @@ var circle = {
 
 
 var pie = new Pie();
-// Now moving it
+
+
+keymage('up a', function() { pie.Up(); });
+keymage('down a', function() { pie.Down(); });
+keymage('left a', function() { pie.Left(); });
+keymage('right a', function() { pie.Right(); });
+
 function move() {
 	now = new Date().getTime();
 	delta = now - then;
