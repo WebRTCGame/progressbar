@@ -1,135 +1,117 @@
-var Pie = function Pie() {
-	this.x = 300;
-	this.y = 100;
-	this.radius = 50;
-	this.color1 = 'rgba(255,0,0,.5)';
-	this.color2 = 'rgba(0,255,0,.5)';
-	this.color3 = 'rgba(0,0,255,.5)';
-	this.color4 = 'rgba(255,0,255,.5)';
-	var cpv = degreesToRadians(90);
-	this.angleA = degreesToRadians(45);
-	this.angleB = this.angleA + cpv;
-	this.angleC = this.angleB + cpv;
-	this.angleD = this.angleC + cpv;
-	this.hilightUp = true;
-	this.hilightRight = true;
-	this.hilightDown = true;
-	this.hilightLeft = true;
+var Pie = function Pie(settings) {
+	
+	this.x = settings.x || 300;
+	this.y = settings.y || 100;
+	this.radius = settings.r || 50;
+	this.scaleRadius = settings.scaleRadius || (this.radius * 0.5);
+	this.color = [
+	settings.color1 || 'rgba(255,0,0,.5)',
+	settings.color2 || 'rgba(0,255,0,.5)',
+	settings.color3 || 'rgba(0,0,255,.5)',
+	settings.color4 || 'rgba(255,0,255,.5)'
+	];
+	this.cpv = degreesToRadians(90);
+	this.angles = [];
+	this.angles[0] = degreesToRadians(45);
+	this.angles[1] = this.angles[0] + this.cpv;
+	this.angles[2] = this.angles[1] + this.cpv;
+	this.angles[3] = this.angles[2] + this.cpv;
+	this.hilight = {
+		up : false,
+		right : false,
+		down : false,
+		left : false
+	};
 	this.timer = new Timer(
 			function (x) {
 
-			if (x > 50) {
+			if (x > settings.length || 50) {
 				//this.increment = false;
 				//console.log("pie precallback " + x);
 				this.enabled = false;
 			}
 		},
-			function (x) {
-
-			if (x < 0) {
-				//this.increment = true;
-				//console.log("pie postcallback " + x);
-			}
-		});
-	this.timer.rate = 0.5;
+			function (x) {});
+	this.timer.rate = settings.rate || 0.5;
 	this.timer.enabled = true;
 
 	return this;
 };
 Pie.prototype.genPath = function genPath(ctx, aA, aB, radd) {
+	
 	ctx.beginPath();
 	ctx.moveTo(this.x, this.y);
 	ctx.arc(this.x, this.y, radd || this.radius, aA, aB, false);
 	ctx.closePath();
 };
+Pie.prototype.drawPieR = function drawPieR(ctx, val) {
+	
+	this.genPath(ctx, this.angles[val], this.angles[val < 3 ? val + 1 : 0]);
+	ctx.fillStyle = this.color[val];
+	ctx.fill();
+};
+Pie.prototype.drawPieH = function drawPieH(ctx, val, del) {
+	
+	this.timer.tick(del);
+	this.genPath(ctx, this.angles[val], this.angles[val < 3 ? val + 1 : 0], this.radius + (this.radius * 0.5));
+	ctx.fillStyle = 'rgba(255,255,255,1)';
+	ctx.fill();
+	ctx.lineWidth = this.timer.value;
+	ctx.strokeStyle = this.color[val];
+	ctx.stroke();
+};
 Pie.prototype.render = function render(ctx, del) {
 	ctx.save();
-	//this.timer.tick(del);
-	if (!this.hilightDown) {
-		this.genPath(ctx, this.angleA, this.angleB);
-		ctx.fillStyle = this.color1;
-		ctx.fill();
-	};
-
-	if (!this.hilightLeft) {
-		this.genPath(ctx, this.angleB, this.angleC);
-		ctx.fillStyle = this.color2;
-		ctx.fill();
+	if (!this.hilight.down) {
+		this.drawPieR(ctx, 0);
 	}
-
-	if (!this.hilightUp) {
-		this.genPath(ctx, this.angleC, this.angleD);
-		ctx.fillStyle = this.color3;
-		ctx.fill();
+	if (!this.hilight.left) {
+		this.drawPieR(ctx, 1);
 	}
-
-	if (!this.hilightRight) {
-		this.genPath(ctx, this.angleD, this.angleA);
-		ctx.fillStyle = this.color4;
-		ctx.fill();
+	if (!this.hilight.up) {
+		this.drawPieR(ctx, 2);
+	}
+	if (!this.hilight.right) {
+		this.drawPieR(ctx, 3);
 	}
 	ctx.restore();
 	ctx.save();
 
-	if (this.hilightDown) {
-		this.timer.tick(del);
-		this.genPath(ctx, this.angleA, this.angleB, this.radius + (this.radius * 0.5));
-		ctx.fillStyle = 'rgba(255,255,255,1)';
-		ctx.fill();
-		ctx.lineWidth = this.timer.value;
-		ctx.strokeStyle = this.color1; //'rgba(255,0,0,.5)';
-		ctx.stroke();
-	};
-	if (this.hilightLeft) {
-		this.timer.tick(del);
-		this.genPath(ctx, this.angleB, this.angleC, this.radius + (this.radius * 0.5));
-		ctx.fillStyle = 'rgba(255,255,255,1)';
-		ctx.fill();
-		ctx.lineWidth = this.timer.value;
-		ctx.strokeStyle = this.color2; //'rgba(255,0,0,.5)';
-		ctx.stroke();
-	};
-	if (this.hilightUp) {
-		this.timer.tick(del);
-		this.genPath(ctx, this.angleC, this.angleD, this.radius + (this.radius * 0.5));
-		ctx.fillStyle = 'rgba(255,255,255,1)';
-		ctx.fill();
-		ctx.lineWidth = this.timer.value;
-		ctx.strokeStyle = this.color3; //'rgba(255,0,0,.5)';
-		ctx.stroke();
-	};
-	if (this.hilightRight) {
-		this.timer.tick(del);
-		this.genPath(ctx, this.angleD, this.angleA, this.radius + (this.radius * 0.5));
-		ctx.fillStyle = 'rgba(255,255,255,1)';
-		ctx.fill();
-		ctx.lineWidth = this.timer.value;
-		ctx.strokeStyle = this.color4; //'rgba(255,0,0,.5)';
-		ctx.stroke();
-	};
+	if (this.hilight.down) {
+		this.drawPieH(ctx, 0, del);
+	}
+	if (this.hilight.left) {
+		this.drawPieH(ctx, 1, del);
+	}
+	if (this.hilight.up) {
+		this.drawPieH(ctx, 2, del);
+	}
+	if (this.hilight.right) {
+		this.drawPieH(ctx, 3, del);
+	}
 	ctx.restore();
-	ctx.fillText(this.timer.value, this.x - 75, this.y);
+	ctx.fillText(this.timer.value, this.x - 100, this.y + 10);
 	if (!this.timer.enabled) {
-		this.hilightUp = this.hilightDown = this.hilightLeft = this.hilightRight = false;
+		this.hilight.up = this.hilight.down = this.hilight.left = this.hilight.right = false;
 	}
 };
 Pie.prototype.Up = function Up() {
-	this.hilightUp = true;
+	this.hilight.up = true;
 	this.timer.reset();
 	this.timer.enabled = true;
 };
 Pie.prototype.Down = function Down() {
-	this.hilightDown = true;
+	this.hilight.down = true;
 	this.timer.reset();
 	this.timer.enabled = true;
 };
 Pie.prototype.Left = function Left() {
-	this.hilightLeft = true;
+	this.hilight.left = true;
 	this.timer.reset();
 	this.timer.enabled = true;
 };
 Pie.prototype.Right = function Right() {
-	this.hilightRight = true;
+	this.hilight.right = true;
 	this.timer.reset();
 	this.timer.enabled = true;
 };

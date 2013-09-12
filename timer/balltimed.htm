@@ -72,7 +72,7 @@ var circle = {
 };
 
 
-var pie = new Pie();
+var pie = new Pie({rate:0.5});
 
 
 keymage('up a', function() { pie.Up(); });
@@ -94,9 +94,9 @@ function move() {
 	
 	ctx.fillText(timer.value, 10, 30);
 	//c.x += calcSpeed(delta, 1);
-	pie.x += calcSpeed(delta,1);
-	if(pie.x - pie.radius > window_width)
-		{pie.x = -pie.radius;}
+	//pie.x += calcSpeed(delta,1);
+	//if(pie.x - pie.radius > window_width)
+		//{pie.x = -pie.radius;}
 	
 		
 	
