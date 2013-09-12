@@ -14,6 +14,7 @@ html, body {
 <script type="text/javascript" src="Utility.js"></script>
 <script type="text/javascript" src="Timer.js"></script>
 <script type="text/javascript" src="Pie.js"></script>
+<script type="text/javascript" src="Player.js"></script>
 </head>
 <body>
 <canvas id="canvas"></canvas>
@@ -73,7 +74,10 @@ var circle = {
 
 
 var pie = new Pie({rate:0.5});
-
+var P1 = new Player();
+var P2 = new Player();
+console.log(JSON.stringify(P1));
+console.log(P1.actions.high.up.power);
 
 keymage('up a', function() { pie.Up(); });
 keymage('down a', function() { pie.Down(); });
