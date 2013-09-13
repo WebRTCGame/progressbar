@@ -1,5 +1,7 @@
 <html>
-<head>
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+   
 <style>
 html, body {
   margin: 0;
@@ -27,7 +29,7 @@ var canvas = document.getElementById('canvas'),
 
 canvas.width = window_width;
 canvas.height = window_height;
-
+ctx.fillStyle = 'argb(255,255,255,1)';
 
 
 var now,
@@ -40,7 +42,7 @@ function(x){
 
 if(x>100){
 this.increment = false;
-console.log("precallback " + x);
+//console.log("precallback " + x);
 
 }
 },
@@ -48,7 +50,7 @@ function(x){
 
 if(x<0){
 this.increment = true;
-console.log("postcallback " + x);
+//console.log("postcallback " + x);
 }
 }
 );
@@ -73,16 +75,32 @@ var circle = {
 };
 
 
-var pie = new Pie({rate:0.5});
+var pie1 = new Pie({x:100,y:150,rate:0.5});
+var pie2 = new Pie({x:100,y:300,rate:0.5});
+var pie3 = new Pie({x:100,y:450,rate:0.5});
+var pie4 = new Pie({x:canvas.width -100,y:150,rate:0.5});
+var pie5 = new Pie({x:canvas.width -100,y:300,rate:0.5});
+var pie6 = new Pie({x:canvas.width -100,y:450,rate:0.5});
+
 var P1 = new Player();
 var P2 = new Player();
 console.log(JSON.stringify(P1));
 console.log(P1.actions.high.up.power);
 
-keymage('up a', function() { pie.Up(); });
-keymage('down a', function() { pie.Down(); });
-keymage('left a', function() { pie.Left(); });
-keymage('right a', function() { pie.Right(); });
+keymage('up q', function() { pie1.Up(); });
+keymage('down q', function() { pie1.Down(); });
+keymage('left q', function() { pie1.Left(); });
+keymage('right q', function() { pie1.Right(); });
+
+keymage('up a', function() { pie2.Up(); });
+keymage('down a', function() { pie2.Down(); });
+keymage('left a', function() { pie2.Left(); });
+keymage('right a', function() { pie2.Right(); });
+
+keymage('up z', function() { pie3.Up(); });
+keymage('down z', function() { pie3.Down(); });
+keymage('left z', function() { pie3.Left(); });
+keymage('right z', function() { pie3.Right(); });
 
 function move() {
 	now = new Date().getTime();
@@ -94,7 +112,12 @@ function move() {
 	ctx.font = "24px Verdana";
 	//var c = circle;
 	//c.draw();
-	pie.render(ctx,delta);
+	pie1.render(ctx,delta);
+	pie2.render(ctx,delta);
+	pie3.render(ctx,delta);
+	pie4.render(ctx,delta);
+	pie5.render(ctx,delta);
+	pie6.render(ctx,delta);
 	
 	ctx.fillText(timer.value, 10, 30);
 	//c.x += calcSpeed(delta, 1);

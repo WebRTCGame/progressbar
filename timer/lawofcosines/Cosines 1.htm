@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)http://lamberta.github.io/html5-animation/examples/ch14/08-cosines-1.html -->
+<html><script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+   
+    
+ </head>
+  <body>
+
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <aside>Move mouse on canvas element.</aside>
+
+    <script src="utils.js"></script>
+    <script src="segment.js"></script>
+    <script>
+    window.onload = function () {
+      var canvas = document.getElementById('canvas'),
+          context = canvas.getContext('2d'),
+          mouse = utils.captureMouse(canvas),
+		  segUpArm = new Segment(80, 30,'rgba(255,0,0,.5)'),
+          segForeArm = new Segment(80, 30,'rgba(0,0,255,.5)'),
+		  segHand = new Segment(40,10,'rgba(0,255,0,.5)'), //1
+		  segFing = new Segment(45,5,'yellow'); //0
+		  
+context.font = "12px Verdana";
+
+      segUpArm.x = canvas.width / 2;
+      segUpArm.y = canvas.height / 2;                                                      
+      
+	  function reach (segment, xpos, ypos) {
+        var dx = xpos - segment.x,
+            dy = ypos - segment.y;
+        segment.rotation = Math.atan2(dy, dx);
+        var w = segment.getPin().x - segment.x,
+            h = segment.getPin().y - segment.y;
+        return {
+          x: xpos - w,
+          y: ypos - h
+        };
+      };
+	  
+	  function position (segmentA, segmentB) {
+        segmentA.x = segmentB.getPin().x;
+        segmentA.y = segmentB.getPin().y;
+      };
+	  
+      (function drawFrame () {
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        var dx = mouse.x - segUpArm.x,
+            dy = mouse.y - segUpArm.y,
+            dist = Math.sqrt(dx * dx + dy * dy),
+            a = 100,
+            b = 100,
+            c = Math.min(dist, a + b),
+            B = Math.acos((b * b - a * a - c * c) / (-2 * a * c)),
+            C = Math.acos((c * c - a * a - b * b) / (-2 * a * b)),
+            D = Math.atan2(dy, dx),
+            E = D + B + Math.PI + C;
+			//other side: E = D - B + Math.PI - C;
+        
+        segUpArm.rotation = (D + B);
+		//other side: segUpArm.rotation = (D - B);
+		
+        var target = segUpArm.getPin();
+        segForeArm.x = target.x;
+        segForeArm.y = target.y;
+        segForeArm.rotation = E;
+        
+		
+		//var target = reach(segment3, mouse.x, mouse.y);
+        //reach(segment0, target.x, target.y);
+        //position(segment3, segment0);
+		
+        segForeArm.draw(context);
+        segUpArm.draw(context);
+		//segment3.draw(context);
+		
+		var wrist = segForeArm.getPin();
+		context.fillText("wrist",wrist.x-10,wrist.y+20);
+		
+		var elbo = segUpArm.getPin();
+		context.fillText("elbo",elbo.x-10,elbo.y+20);
+		
+		var shoulder = {x:segUpArm.x,y:segUpArm.y};
+		context.fillText("shoulder",shoulder.x-10,shoulder.y+20);
+		
+		segHand.x = wrist.x;
+		segHand.y = wrist.y;
+		
+		var handAt = {x:400,y:100};
+		var target = reach(segFing, handAt.x, handAt.y);
+        reach(segHand, target.x, target.y);
+        position(segFing, segHand);
+		
+		segHand.draw(context);
+		segFing.draw(context);
+		
+		 context.beginPath();
+  context.arc(handAt.x, handAt.y, 10, 0, (Math.PI * 2), true);
+  context.closePath();
+  context.stroke();
+		
+		var tips = segFing.getPin();
+		
+		 context.beginPath();
+  context.moveTo(tips.x, tips.y);
+  context.lineTo(handAt.x, handAt.y);
+  context.closePath();
+  context.stroke();
+  
+  
+  context.beginPath();
+  context.arc(mouse.x, mouse.y, 10, 0, (Math.PI * 2), true);
+  context.closePath();
+  context.stroke();
+  
+  context.beginPath();
+  context.moveTo(mouse.x, mouse.y);
+  context.lineTo(wrist.x, wrist.y);
+  context.closePath();
+  context.stroke();
+  
+      }());
+    };
+    </script>
+  
+
+</body></html>

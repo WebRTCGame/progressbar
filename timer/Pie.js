@@ -25,7 +25,7 @@ var Pie = function Pie(settings) {
 	this.timer = new Timer(
 			function (x) {
 
-			if (x > settings.length || 50) {
+			if (x >  50) {
 				//this.increment = false;
 				//console.log("pie precallback " + x);
 				this.enabled = false;
@@ -33,7 +33,7 @@ var Pie = function Pie(settings) {
 		},
 			function (x) {});
 	this.timer.rate = settings.rate || 0.5;
-	this.timer.enabled = true;
+	this.timer.enabled = false;
 
 	return this;
 };
@@ -52,7 +52,8 @@ Pie.prototype.drawPieR = function drawPieR(ctx, val) {
 };
 Pie.prototype.drawPieH = function drawPieH(ctx, val, del) {
 	
-	this.timer.tick(del);
+	//this.timer.tick(del);
+	//console.log(this.timer.value);
 	this.genPath(ctx, this.angles[val], this.angles[val < 3 ? val + 1 : 0], this.radius + (this.radius * 0.5));
 	ctx.fillStyle = 'rgba(255,255,255,1)';
 	ctx.fill();
@@ -76,7 +77,8 @@ Pie.prototype.render = function render(ctx, del) {
 	}
 	ctx.restore();
 	ctx.save();
-
+	
+	if (this.timer.enabled) {this.timer.tick(del)};
 	if (this.hilight.down) {
 		this.drawPieH(ctx, 0, del);
 	}
