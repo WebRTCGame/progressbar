@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://phrogz.net/tmp/canvas_gauge.html -->
+<html lang="en"><script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>HTML Canvas Gauge</title>
+	<style type="text/css" media="screen">
+		body { margin:2em 4em; background:#ddd; text-align:center }
+		canvas { display:block; border:1px solid #aaa; margin:1em auto; background:#eee; }
+	</style>
+<style type="text/css"></style><style type="text/css"></style></head><body>
+	<canvas height="500" width="500"></canvas>
+
+	<script type="text/javascript" charset="utf-8">
+		        var dialCenter = [129, 124];
+        var needleCenter = [13, 121.5];
+        var needle = new Image;
+        var c = document.getElementsByTagName('canvas')[0];
+        var ctx = c.getContext('2d');
+        var mouse;
+        var pivotPoint = {
+            x: 0,
+            y: 0
+        };
+        needle.src = 'needle.png';
+        var d2r = function (deg) {
+            return deg * (Math.PI / 180)
+        };
+        var r2d = function (rad) {
+            rad * (180 / Math.PI)
+        };
+        var drawRotatedImage = function (context, image, x, y, cpx, cpy, angle) {
+            context.save();
+            context.translate(x, y);
+            
+            context.rotate(angle - Math.PI / 2);
+            context.scale(1.5, distance(x, y, mouse.x, mouse.y) / image.height);
+            context.drawImage(image, -cpx, -cpy);
+            context.restore();
+        };
+
+        var distance = function (p1x, p1y, p2x, p2y) {
+            var dx = p1x - p2x,
+                dy = p1y - p2y;
+            return Math.sqrt(dx * dx + dy * dy);
+        };
+
+        var rotationToPoint = function (p1x, p1y, p2x, p2y) {
+            var dx = p2x - p1x;
+            var dy = p2y - p1y;
+
+            return Math.atan2(dy, dx);
+        };
+
+        var captureMouse = function (element) {
+            var mouse = {
+                x: 0,
+                y: 0,
+                event: null
+            },
+            body_scrollLeft = document.body.scrollLeft,
+                element_scrollLeft = document.documentElement.scrollLeft,
+                body_scrollTop = document.body.scrollTop,
+                element_scrollTop = document.documentElement.scrollTop,
+                offsetLeft = element.offsetLeft,
+                offsetTop = element.offsetTop;
+
+            element.addEventListener('mousemove', function (event) {
+                var x, y;
+
+                if (event.pageX || event.pageY) {
+                    x = event.pageX;
+                    y = event.pageY;
+                } else {
+                    x = event.clientX + body_scrollLeft + element_scrollLeft;
+                    y = event.clientY + body_scrollTop + element_scrollTop;
+                }
+                x -= offsetLeft;
+                y -= offsetTop;
+
+                mouse.x = x;
+                mouse.y = y;
+                mouse.event = event;
+            }, false);
+
+            return mouse;
+        };
+
+        window.requestAnimationFrame = function () {
+            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame || function (f) {
+                window.setTimeout(f, 1e3 / 60);
+            }
+        }();
+
+        var run = function () {
+            mouse = captureMouse(c);
+            pivotPoint.x = needleCenter[0];
+            pivotPoint.y = needleCenter[1];
+            bonePos = {
+                x: c.width / 2,
+                y: c.height / 2
+            };
+			boneEndPos = {x:0,y:0};
+			
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+
+            (function drawFrame() {
+                window.requestAnimationFrame(drawFrame, c);
+				boneEndPos = {x:mouse.x,y:mouse.y};
+				ctx.clearRect(0, 0, c.width, c.height);
+				var rotty = rotationToPoint(boneEndPos.x, boneEndPos.y, bonePos.x, bonePos.y);
+                drawRotatedImage(ctx, needle, bonePos.x, bonePos.y, pivotPoint.x, pivotPoint.y, rotty);
+                ctx.beginPath();
+                ctx.arc(boneEndPos.x, boneEndPos.y, 10, 0, (Math.PI * 2), true);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.moveTo(c.width / 2, c.height / 2);
+				ctx.beginPath();
+                ctx.arc(bonePos.x, bonePos.y, 10, 0, (Math.PI * 2), true);
+                ctx.closePath();
+				ctx.moveTo(c.width / 2, c.height / 2);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+            ());
+        }();
+	</script>
+
+</body></html>

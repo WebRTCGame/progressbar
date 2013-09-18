@@ -67,8 +67,29 @@ window.utils.captureMouse = function (element) {
     mouse.x = x;
     mouse.y = y;
     mouse.event = event;
+	//console.log(event);
   }, false);
-  
+  /*
+  element.addEventListener('mousedown', function (event)
+      {
+        var x, y;
+    
+    if (event.pageX || event.pageY) {
+      x = event.pageX;
+      y = event.pageY;
+    } else {
+      x = event.clientX + body_scrollLeft + element_scrollLeft;
+      y = event.clientY + body_scrollTop + element_scrollTop;
+    }
+    x -= offsetLeft;
+    y -= offsetTop;
+    
+    mouse.x = x;
+    mouse.y = y;
+    mouse.event = event;
+	//console.log(event.button);
+      }, false);
+  */
   return mouse;
 };
 
