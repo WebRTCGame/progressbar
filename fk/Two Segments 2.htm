@@ -17,21 +17,21 @@
     <script src="./Two Segments 2_files/slider.js"></script>
     <script>
     window.onload = function () {
-	
+	nodes.once();
       var canvas = document.getElementById('canvas'),
           context = canvas.getContext('2d'),
-          segment0 = new Segment(120, 20,"red",true),
-          segment1 = new Segment(60, 20,"blue"),
-          slider0 = new Slider(-180, 180, 0),
-          slider1 = new Slider(-180, 180, 0);
+          slider0 = new Slider(-360, 360, 0),
+          slider1 = new Slider(-180, 180, 0),
+		  slider2 = new Slider(-180, 180, 0);
       
-	  
-	  nodes[segment0.id] = segment0;
-	  nodes[segment1.id] = segment1;
+	  segment0 = nodes.add(new Segment(120, 10,"red",true));
+	  segment1 = nodes.add(new Segment(60, 10,"blue"));
+	segment2 = nodes.add(new Segment(40, 10,"green"));
 	  
       segment0.x = 100;
       segment0.y = 100;
 	  segment1.setParent(segment0);
+		segment2.setParent(segment1);
 		
       slider0.x = 320;
       slider0.y = 20;
@@ -42,6 +42,11 @@
       slider1.y = 20;
       slider1.captureMouse(canvas);
       slider1.onchange = drawFrame;
+	  
+	  slider2.x = 360;
+      slider2.y = 20;
+      slider2.captureMouse(canvas);
+      slider2.onchange = drawFrame;
 
       drawFrame();
       
@@ -51,14 +56,16 @@
         //segment0.rotation = slider0.value * Math.PI / 180;
 		segment0.update(slider0.value * Math.PI / 180);
 		segment1.update(slider1.value * Math.PI / 180);
+		segment2.update(slider2.value * Math.PI / 180);
 		
         //segment1.rotation = segment0.rotation + (slider1.value * Math.PI / 180);
-        
-        segment0.draw(context);
-        segment1.draw(context);
+        nodes.each(function(x){x.draw(context)});
+        //segment0.draw(context);
+        //segment1.draw(context);
+		
         slider0.draw(context);
         slider1.draw(context);
-		console.log(JSON.stringify(segment0));
+		slider2.draw(context);
       }
     };
     </script>

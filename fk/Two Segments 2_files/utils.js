@@ -194,3 +194,10 @@ window.utils.intersects = function (rectA, rectB) {
            rectA.y + rectA.height < rectB.y ||
            rectB.y + rectB.height < rectA.y);
 };
+
+window.utils.clamp = function(num, min, max) {
+  return Math.min(Math.max(num, min), max);
+};
+window.utils.snap =  function(val , resolution) {
+  return (val / resolution).floor() * resolution;
+};

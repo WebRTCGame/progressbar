@@ -1,8 +1,16 @@
 function Segment(width, height, color, isRoot) {
-	this.id = 0;//(isRoot === true ? 0 : genGuid);
-	if (!isRoot){this.id = genGuid()}
+	this.id = 0; //(isRoot === true ? 0 : genGuid);
+	this.isRoot = isRoot;
+	if (!this.isRoot) {
+		this.id = genGuid()
+	}
 	this.x = 0;
 	this.y = 0;
+	this.fkWeight = 1.0;
+	this.ikWeight = 0.0;
+	this.ikUseLOC = false;
+	this.ikLOCRH = true;
+	this.ikPoint = {x:0,y:0};
 	this.width = width;
 	this.height = height;
 	this.vx = 0;
@@ -15,6 +23,10 @@ function Segment(width, height, color, isRoot) {
 	this.lineWidth = 1;
 	this.parent = undefined;
 	this.children = [];
+
+	this.angleConstraintMin = -75;
+	this.angleConstrainttMax = 75;
+	this.useAngleConstraint = true;
 
 	function S4() {
 		return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -30,17 +42,28 @@ Segment.prototype.isRoot = function () {
 };
 Segment.prototype.setParent = function (parentSegment) {
 	this.parent = parentSegment.id;
-	
 	this.getParent().children.push(this.id);
 };
 Segment.prototype.getParent = function () {
-	return nodes[this.parent];
+
+	return nodes.get(this.parent);
 };
 Segment.prototype.update = function (iAngle) {
-	this.selfAngle = iAngle;
+	var aAngle = iAngle;
+
+	if (this.useAngleConstraint) {
+
+		var vmin = this.angleConstraintMin * (Math.PI / 180);
+
+		var vmax = this.angleConstrainttMax * (Math.PI / 180);
+
+		aAngle = Math.min(Math.max(iAngle, vmin), vmax);
+	}
+
+	this.selfAngle = aAngle;
 	if (this.parent !== undefined) {
 
-		this.rotation = this.getParent().rotation + this.selfAngle;
+		this.rotation = (this.getParent().rotation * this.fkWeight) + this.selfAngle;
 	} else {
 
 		this.rotation = this.selfAngle;
@@ -56,10 +79,13 @@ Segment.prototype.draw = function (context) {
 	var h = this.height,
 	d = this.width + h, //top-right diagonal
 	cr = h / 2; //corner radius
+
+
 	context.save();
 	context.translate(this.x, this.y);
 	context.rotate(this.rotation);
 	context.scale(this.scaleX, this.scaleY);
+
 	context.lineWidth = this.lineWidth;
 	context.fillStyle = this.color;
 	context.beginPath();
@@ -74,9 +100,11 @@ Segment.prototype.draw = function (context) {
 	context.quadraticCurveTo(-cr, -cr, 0, -cr);
 	context.closePath();
 	context.fill();
+
 	if (this.lineWidth > 0) {
 		context.stroke();
 	}
+
 	//draw the 2 "pins"
 	context.beginPath();
 	context.arc(0, 0, 2, 0, (Math.PI * 2), true);
@@ -89,6 +117,50 @@ Segment.prototype.draw = function (context) {
 	context.stroke();
 
 	context.restore();
+
+	context.save();
+	context.translate(this.x, this.y);
+	context.rotate(this.rotation);
+	context.rect(0, -this.height*2, this.width, 10);
+	var grd = context.createLinearGradient(0, -this.height*2, this.width, 10);
+	grd.addColorStop(0, 'red');
+	grd.addColorStop(this.fkWeight, 'rgba(0,0,0,0)');
+	context.fillStyle = grd;
+	context.fill();
+	context.restore();
+	
+	context.save();
+	context.translate(this.x, this.y);
+	context.rotate(this.rotation);
+	context.rect(0, this.height, this.width, 10);
+	var grd = context.createLinearGradient(0, this.height, this.width, 10);
+	grd.addColorStop(0, 'blue');
+	grd.addColorStop(this.ikWeight, 'rgba(0,0,0,0)');
+	context.fillStyle = grd;
+	context.fill();
+	context.restore();
+	
+	
+	
+	context.save();
+	context.translate(this.x, this.y);
+
+	if (!this.isRoot) {
+		context.rotate(this.getParent().rotation * this.fkWeight);
+
+	}
+	context.beginPath();
+
+	context.arc(0, 0, this.width, this.angleConstraintMin * (Math.PI / 180), this.angleConstrainttMax * (Math.PI / 180), false);
+
+	context.lineWidth = 1;
+	context.strokeStyle = 'rgba(0,0,0,1)';
+	context.fillStyle = 'rgba(255,255,0,.25)';
+	context.stroke();
+	context.fill();
+	context.closePath();
+	context.restore();
+
 };
 
 Segment.prototype.getPin = function () {
