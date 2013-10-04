@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../../codebase/webix.css" type="text/css" media="screen" charset="utf-8">
+		<script src="../../codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="./common/underscore.js"></script>
+		<script type="text/javascript" src="./common/backbone.js"></script>
+
+		<title>Backbone Integration. CRUD</title>
+	</head>
+	<body>
+		<div id="controls" style='display:none'>
+			<input type="button" value="Add" onclick='borgs.addSample()'>
+			<input type="button" value="Delete firts" onclick='borgs.deleteSample()'>
+			<input type="button" value="Change name for selected record" onclick='borgs.changeName()' >
+		</div>
+		<script type="text/javascript" charset="utf-8">
+			webix.ready(function(){
+
+				webix.ui({
+					rows:[
+						{ template:"top", height:30 },
+						{ type:"wide", cols:[
+							{
+								id:"listA",
+								view:"list", 
+								select:true,
+								type:{
+									template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>",
+									height:100
+								}
+							},
+							{ 
+								id:"details",
+								template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>",
+								data:{ $empty:true }
+							},
+							{ template:"html->controls" }
+						]},
+						{ template:"bottom", height:30 }
+					]
+				});
+
+
+
+
+				BorgItem = Backbone.Model.extend({});
+				BorgList = Backbone.Collection.extend({
+					model:BorgItem,
+					url:"./common/data.json",
+
+					addSample:function(){
+						this.add(new BorgItem({ id:webix.uid(), name:"New Borg", size:1, age:4 }));
+					},
+					deleteSample:function(){
+						this.remove(this.at(0));
+					},
+					changeName:function(){
+						this.get($$("listA").getSelectedId()).set("name", "NextGen Borg");
+					}
+				});
+				
+				borgs = new BorgList();
+				$$("listA").sync(borgs);
+				$$("details").sync(borgs);
+
+				$$("listA").attachEvent("onAfterSelect", function(id){
+					$$("details").parse(borgs.get(id).attributes);
+				});
+				borgs.fetch();
+			});
+		</script>
+	</body>
+</html>

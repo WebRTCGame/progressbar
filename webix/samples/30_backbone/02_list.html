@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../../codebase/webix.css" type="text/css" media="screen" charset="utf-8">
+		<script src="../../codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="./common/underscore.js"></script>
+		<script type="text/javascript" src="./common/backbone.js"></script>
+
+		<title>Backbone Collection Integration</title>
+	</head>
+	<body>
+		<script type="text/javascript" charset="utf-8">
+			webix.ready(function(){
+
+				webix.ui({
+					rows:[
+						{ template:"top", height:30 },
+						{ type:"wide", cols:[
+							{ 
+								view:"list", 
+								type:{
+									template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>",
+									height:100
+								},
+								url:"common/data.json"
+							},
+							{ css:{"text-align":"center"}, view:"template", id:"center" },
+							{ template:"right" }
+						]},
+						{ template:"bottom", height:30 }
+					]
+				});
+
+
+
+
+				var BorgItem = Backbone.Model.extend({});
+				var BorgView = Backbone.View.extend({
+					template:_.template("<h3><%= name %></h3><li>Size: <%= size %></li><li>Age: <%= age %></li>"),
+					render:function(){
+						var html = this.template(this.model.toJSON());
+						$(this.el).html(html);
+					}
+				});
+				var BorgList = Backbone.Collection.extend({
+					model:BorgItem,
+					url:"./common/data.json"
+				});
+				var BorgsView = Backbone.View.extend({
+					el:$$("center").$view,
+
+					render:function(){
+						this.collection.forEach(function(borg){
+							var view = new BorgView({model:borg});
+								view.render();
+							this.$el.append(view.el)
+						}, this);
+					}
+				});
+
+
+				var borgs = new BorgList();
+				var app = new BorgsView({ collection: borgs });
+				app.render();
+
+				borgs.bind('all', app.render, app);
+				borgs.fetch();
+
+			});
+		</script>
+	</body>
+</html>

@@ -1,5 +1,16 @@
 function Nodes(){
 this.n = {};
+this.selected = "";
+};
+Nodes.prototype.selectNext = function(){
+if (this.n[selected].isRoot){
+
+}
+};
+Nodes.prototype.selectParent = function(){
+if (!this.n[selected].isRoot){
+this.selected = this.n[selected].parent;
+}
 };
 Nodes.prototype.once = function(){
 console.log("whateva");

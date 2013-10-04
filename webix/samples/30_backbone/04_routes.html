@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../../codebase/webix.css" type="text/css" media="screen" charset="utf-8">
+		<script src="../../codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="./common/underscore.js"></script>
+		<script type="text/javascript" src="./common/backbone.js"></script>
+
+		<title>Backbone Router</title>
+	</head>
+	<body>
+		<script type="text/javascript" charset="utf-8">
+			webix.ready(function(){
+
+				webix.ui({
+					rows:[
+						{ cells:[
+							{ id:"list_tab", rows:[
+								{ view:"toolbar", elements:[
+									{ view:"button", label:"Add", click:function(){ borgs.addSample() }},
+									{ view:"button", label:"Delete first", click:function(){ borgs.deleteSample() }},
+									{ view:"button", label:"Change name for selected record", click:function(){ borgs.changeName() }}
+								]},
+								{
+									id:"listA",
+									view:"list", 
+									select:true,
+									type:{
+										template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>",
+										height:100
+									}
+								}
+							]},
+							{ id:"details_tab", rows:[
+								{ view:"toolbar", elements:[
+									{ view:"button", label:"Back", click:function(){ routes.navigate("", {trigger:true}); }},
+									{ view:"button", label:"Change name for selected record", click:function(){ borgs.changeName() }}
+								]},
+								{
+									id:"details",
+									template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>",
+									data:{ $empty:true }
+								}
+							]}
+						]}
+					]
+				});
+
+
+
+
+
+
+
+
+				BorgItem = Backbone.Model.extend({});
+				BorgList = Backbone.Collection.extend({
+					model:BorgItem,
+					url:"./common/data.json",
+
+					addSample:function(){
+						this.add(new BorgItem({ id:webix.uid(), name:"New Borg", size:1, age:4 }));
+					},
+					deleteSample:function(){
+						this.remove(this.at(0));
+					},
+					changeName:function(){
+						this.get($$("listA").getSelectedId()).set("name", "NextGen Borg");
+					}
+				});
+
+
+				
+				borgs = new BorgList();
+
+				var routes = new (Backbone.Router.extend({
+					routes:{
+						"":"index", 
+						"borgs/:id":"details"
+					},
+					details:function(id){
+						$$("listA").select(id);
+						$$("details_tab").show();
+						$$("details").parse(borgs.get(id).attributes);
+					},
+					index:function(){
+						$$("list_tab").show();
+					}
+				}));
+
+				$$("listA").sync(borgs);
+				$$("details").sync(borgs);
+
+				$$("listA").attachEvent("onAfterSelect", function(id){
+					routes.navigate("borgs/"+id, {trigger:true})
+				});
+
+
+				borgs.fetch({
+					success:function(){
+						Backbone.history.start();		
+					}
+				});
+
+			});
+		</script>
+	</body>
+</html>

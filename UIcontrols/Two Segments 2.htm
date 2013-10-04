@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html><script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+   
+    <link rel="stylesheet" href="http://lamberta.github.io/html5-animation/examples/include/style.css">
+  <style type="text/css"></style><style type="text/css"></style></head>
+  <body>
+    <header>
+     
+    </header>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    
+  
+    <script src="./Two Segments 2_files/utils.js"></script>
+    <script src="./Two Segments 2_files/UIctrl.js"></script>
+    <script src="./Two Segments 2_files/slider.js"></script>
+    <script>
+    window.onload = function () {
+	
+      var canvas = document.getElementById('canvas'),
+          context = canvas.getContext('2d'),
+          slider0 = new Slider(-360, 360, 0),
+          slider1 = new Slider(-180, 180, 0),
+		  slider2 = new Slider(-180, 180, 0);
+      
+	  var button = new Button(canvas);
+	  button.x = 20;
+	  button.y = 20;
+	  button.width = 40;
+	  button.height = 20;
+	  
+      slider0.x = 320;
+      slider0.y = 20;
+      slider0.captureMouse(canvas);
+      slider0.onchange = drawFrame;
+
+      slider1.x = 340;
+      slider1.y = 20;
+      slider1.captureMouse(canvas);
+      slider1.onchange = drawFrame;
+	  
+	  slider2.x = 360;
+      slider2.y = 20;
+      slider2.captureMouse(canvas);
+      slider2.onchange = drawFrame;
+
+      drawFrame();
+      
+      function drawFrame () {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+		button.update();
+		button.render(context);
+        slider0.draw(context);
+        slider1.draw(context);
+		slider2.draw(context);
+      }
+    };
+    </script>
+  
+
+</body></html>

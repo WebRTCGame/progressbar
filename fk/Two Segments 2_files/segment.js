@@ -7,14 +7,14 @@ function Segment(width, height, color, isRoot) {
 	this.x = 0;
 	this.y = 0;
 	this.fkWeight = 1.0;
-	this.ikWeight = 0.0;
+	this.ikWeight = 0.25;
 	this.ikUseLOC = false;
 	this.ikLOCRH = true;
 	this.ikPoint = {x:0,y:0};
 	this.width = width;
 	this.height = height;
-	this.vx = 0;
-	this.vy = 0;
+	//this.vx = 0;
+	//this.vy = 0;
 	this.rotation = 0;
 	this.selfAngle = 0;
 	this.scaleX = 1;
@@ -154,8 +154,8 @@ Segment.prototype.draw = function (context) {
 	context.arc(0, 0, this.width, this.angleConstraintMin * (Math.PI / 180), this.angleConstrainttMax * (Math.PI / 180), false);
 
 	context.lineWidth = 1;
-	context.strokeStyle = 'rgba(0,0,0,1)';
-	context.fillStyle = 'rgba(255,255,0,.25)';
+	context.strokeStyle = 'rgba(0,0,0,0.25)';
+	context.fillStyle = 'rgba(255,255,0,.1)';
 	context.stroke();
 	context.fill();
 	context.closePath();

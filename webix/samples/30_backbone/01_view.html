@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../../codebase/webix.css" type="text/css" media="screen" charset="utf-8">
+		<script src="../../codebase/webix.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="./common/underscore.js"></script>
+		<script type="text/javascript" src="./common/backbone.js"></script>
+
+		<title>Backbone integration</title>
+	</head>
+	<body>
+		<script type="text/javascript" charset="utf-8">
+			webix.ready(function(){
+
+				webix.ui({
+					rows:[
+						{ template:"top", height:30 },
+						{ type:"wide", cols:[
+							{ template:"<h3>#name#</h3><li>Size: #size#</li><li>Age: #age#</li>", data:{
+								name:"Borg Alpha", size:35, age:12
+							}},
+							{ css:{"text-align":"center"}, view:"template", id:"center" },
+							{ template:"right" }
+						]},
+						{ template:"bottom", height:30 }
+					]
+				});
+
+				var BorgItem = Backbone.Model.extend({});
+				var BorgView = Backbone.View.extend({
+					el:$$('center').$view,
+
+					template:_.template("<h3><%= name %></h3><li>Size: <%= size %></li><li>Age: <%= age %></li>"),
+					render:function(model){
+						var html = this.template(model.toJSON());
+						$(this.el).html(html);
+					}
+				});
+
+				var view = new BorgView();
+				view.render(new BorgItem({
+					name:"Borg Alpha",
+					size:35,
+					age:12
+				}));
+
+			});
+		</script>
+	</body>
+</html>
