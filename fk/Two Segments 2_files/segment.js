@@ -23,11 +23,14 @@ function Segment(width, height, color, isRoot) {
 	this.lineWidth = 1;
 	this.parent = undefined;
 	this.children = [];
-
+	this.zIndex = 0;
 	this.angleConstraintMin = -75;
 	this.angleConstrainttMax = 75;
 	this.useAngleConstraint = true;
-
+	this.imageFit = false;
+	this.imageRot = true;
+	this.selected = false;
+	
 	function S4() {
 		return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 	};

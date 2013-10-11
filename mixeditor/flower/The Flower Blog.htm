@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>The Flower Blog</title>
+	
+	<link rel="stylesheet" href="master.css" type="text/css" media="screen">
+	<link href="./bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+<link href="dist/css/fuelux.css" rel="stylesheet">
+    <!--<link href="starter-template.css" rel="stylesheet">-->
+
+<script src="lib/require.js"></script>
+
+<style type="text/css">
+		
+
+		.pillbox {
+			border: 1px solid #bbb;
+			margin-bottom: 10px;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			border-radius: 4px;
+			width: 251px;
+		}
+
+		.container > div, .container > table {
+			margin: 20px;
+		}
+
+		.tree {
+			width: 430px;
+			height: 350px;
+		}
+
+		.static-loader {
+			margin-left: 30px;
+		}
+
+		.step-content {
+			border: 1px solid #D4D4D4;
+			border-top: 0;
+			border-radius: 0 0 4px 4px;
+			padding: 10px;
+			margin-bottom: 10px;
+		}
+	</style>
+<script>
+		requirejs.config({
+			paths: {
+				'jquery': 'lib/jquery-1.9.1.min',
+				'underscore': 'http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min',
+				'bootstrap': 'lib/bootstrap/js',
+				'fuelux': 'src'
+			}
+		});
+		require(['jquery', 'sample/data', 'sample/datasource', 'sample/datasourceTree', 'fuelux/all'], function ($, sampleData, StaticDataSource, DataSourceTree) {
+// COMBOBOX
+			$('#btnComboboxDisable').on('click', function () {
+				$('#MyCombobox').combobox('disable');
+			});
+			$('#btnComboboxEnable').on('click', function () {
+				$('#MyCombobox').combobox('enable');
+			});
+			$('#btnComboboxGetSelectedItem').on('click', function () {
+				console.log($('#MyCombobox').combobox('selectedItem'));
+			});
+			$('#btnComboboxSelectByValue').on('click', function () {
+				$('#MyCombobox').combobox('selectByValue', '3');
+			});
+			$('#btnComboboxSelectBySelector').on('click', function () {
+				$('#MyCombobox').combobox('selectBySelector', 'li[data-fizz=buzz]');
+			});
+			$('#btnComboboxSelectByIndex').on('click', function () {
+				$('#MyCombobox').combobox('selectByIndex', '3');
+			});
+			$('#btnComboboxSelectByText').on('click', function () {
+				$('#MyCombobox').combobox('selectByText', 'Four');
+			});
+			$('#MyCombobox').on('changed', function (evt, data) {
+				console.log(data);
+			});
+
+			// SEARCH CONTROL
+			$('#MySearch').on('searched', function (e, text) {
+				alert('Searched: ' + text);
+			});
+			$('#btnSearchDisable').on('click', function () {
+				$('#MySearch').search('disable');
+			});
+			$('#btnSearchEnable').on('click', function () {
+				$('#MySearch').search('enable');
+			});
+
+			// PILLBOX
+			$('#btnAdd').click(function () {
+				$('#MyPillbox ul').append('<li>Item Eight</li>');
+			});
+
+			$('#btnRemove').click(function () {
+				$('#MyPillbox li[data-value="foo"]').remove();
+			});
+
+			$('#btnItems').click(function () {
+				var items = $('#MyPillbox').pillbox('items');
+				console.log(items);
+			});
+
+
+			// DATAGRID
+			var dataSource = new StaticDataSource({
+				columns: [
+					{
+						property: 'toponymName',
+						label: 'Name',
+						sortable: true
+					},
+					{
+						property: 'countrycode',
+						label: 'Country',
+						sortable: true
+					},
+					{
+						property: 'population',
+						label: 'Population',
+						sortable: true
+					},
+					{
+						property: 'fcodeName',
+						label: 'Type',
+						sortable: true
+					}
+				],
+				data: sampleData.geonames,
+				delay: 250
+			});
+
+			$('#MyGrid').datagrid({
+				dataSource: dataSource
+			});
+
+			$('#MyStretchGrid').datagrid({
+				dataSource: dataSource,
+				stretchHeight: true
+			});
+
+			// SELECT
+			$('#MySelect').on('changed', function (evt, data) {
+				console.log(data);
+			});
+			$('#getSelectedItem').on('click', function () {
+				console.log($('#MySelect').select('selectedItem'));
+			});
+			$('#selectByValue').on('click', function () {
+				$('#MySelect').select('selectByValue', '3');
+			});
+			$('#selectBySelector').on('click', function () {
+				$('#MySelect').select('selectBySelector', 'li[data-fizz=buzz]');
+			});
+			$('#selectByIndex').on('click', function () {
+				$('#MySelect').select('selectByIndex', '3');
+			});
+			$('#selectByText').on('click', function () {
+				$('#MySelect').select('selectByText', 'One');
+			});
+			$('#enableSelect').on('click', function () {
+				$('#MySelect').select('enable');
+			});
+			$('#disableSelect').on('click', function () {
+				$('#MySelect').select('disable');
+
+			});
+
+			// SPINNER
+
+			$('#ex-spinner').on('changed', function (e, value) {
+				console.log('Spinner changed: ', value);
+			});
+
+			// TREE
+			var dataSourceTree = new DataSourceTree({
+				data: [
+					{ name: 'Test Folder 1', type: 'folder', additionalParameters: { id: 'F1' } },
+					{ name: 'Test Folder 2', type: 'folder', additionalParameters: { id: 'F2' } },
+					{ name: 'Test Item 1', type: 'item', additionalParameters: { id: 'I1' } },
+					{ name: 'Test Item 2', type: 'item', additionalParameters: { id: 'I2' } }
+				],
+				delay: 400
+			});
+
+			$('#ex-tree').on('loaded', function (e) {
+				console.log('Loaded');
+			});
+
+			$('#ex-tree').tree({
+				dataSource: dataSourceTree,
+				loadingHTML: '<div class="static-loader">Loading...</div>',
+				multiSelect: true,
+				cacheItems: true
+			});
+
+			$('#ex-tree').on('selected', function (e, info) {
+				console.log('Select Event: ', info);
+			});
+
+			$('#ex-tree').on('opened', function (e, info) {
+				console.log('Open Event: ', info);
+			});
+
+			$('#ex-tree').on('closed', function (e, info) {
+				console.log('Close Event: ', info);
+			});
+
+
+			// CHECKBOX
+			$('#btnChkToggle').on('click', function() {
+				$('#chk1').checkbox('toggle');
+			});
+			$('#btnChkDisable').on('click', function() {
+				$('#chk1').checkbox('disable');
+			});
+			$('#btnChkEnable').on('click', function() {
+				$('#chk1').checkbox('enable');
+			});
+
+
+			// RADIO
+			$('#btnRadioDisable').on('click', function() {
+				$('#radio1').radio('disable');
+			});
+			$('#btnRadioEnable').on('click', function() {
+				$('#radio1').radio('enable');
+			});
+
+
+			// WIZARD
+			$('#MyWizard').on('change', function(e, data) {
+				console.log('change');
+				if(data.step===3 && data.direction==='next') {
+					// return e.preventDefault();
+				}
+			});
+			$('#MyWizard').on('changed', function(e, data) {
+				console.log('changed');
+			});
+			$('#MyWizard').on('finished', function(e, data) {
+				console.log('finished');
+			});
+			$('#btnWizardPrev').on('click', function() {
+				$('#MyWizard').wizard('previous');
+			});
+			$('#btnWizardNext').on('click', function() {
+				$('#MyWizard').wizard('next','foo');
+			});
+			$('#btnWizardStep').on('click', function() {
+				var item = $('#MyWizard').wizard('selectedItem');
+				console.log(item.step);
+			});
+			$('#btnWizardSetStep4').on('click', function() {
+				var step = 4;
+				$('#MyWizard').wizard('selectedItem', {step:step});
+			});
+			$('#MyWizard').on('stepclick', function(e, data) {
+				console.log('step' + data.step + ' clicked');
+				if(data.step===1) {
+					// return e.preventDefault();
+				}
+			});
+
+			
+		});
+
+</script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+	<header>
+		<h1>The Flower Blog</h1>
+	</header>
+	
+	
+	<nav class="navbar navbar-default" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Brand</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Link</a></li>
+      <li><a href="#">Link</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li><a href="#">Separated link</a></li>
+          <li><a href="#">One more separated link</a></li>
+        </ul>
+      </li>
+    </ul>
+    <form class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#">Link</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li><a href="#">Separated link</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</nav>
+	
+	<section id="intro">
+		<header>
+			<h2>header</h2>
+		</header>
+		<p>text</p>
+		<img src="intro_flower.png" alt="Flower">
+	</section>
+	<div id="content">
+	<aside>
+			<section>
+				<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          Collapsible Group Item #1
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse in">
+      <div class="panel-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+          Collapsible Group Item #2
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse">
+      <div class="panel-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+          Collapsible Group Item #3
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+    </div>
+  </div>
+</div>
+			</section>
+			<section>
+				<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+  <div class="panel-body">
+    <p>...</p>
+  </div>
+<div class="well">this is a well</div>
+  <!-- List group -->
+  <ul class="list-group">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Morbi leo risus</li>
+    <li class="list-group-item">Porta ac consectetur ac</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+			</section>
+		</aside>
+	
+		<div id="mainContent">
+			<section>
+				<article class="blogPost">
+					<header>
+						<h2>This is the title of a blog post</h2>
+						<p>Posted on <time datetime="2009-06-29T23:31+01:00">June 29th 2009</time> by <a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Mads Kjaer</a> - <a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#comments">3 comments</a></p>
+					</header>
+					<div>
+						<p>text</p>
+					
+						<img src="flower.png" alt="Flower">
+
+						<p>text</p>
+
+						<p>text</p>
+						</div>
+				</article>
+			</section>
+			<section id="comments">
+				<h3>Comments</h3>
+				<article>
+					<header>
+						<a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">George Washington</a> on <time datetime="2009-06-29T23:35:20+01:00">June 29th 2009 at 23:35</time>
+					</header>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</p>
+				</article>
+				<article>
+					<header>
+						<a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Benjamin Franklin</a> on <time datetime="2009-06-29T23:40:09+01:00">June 29th 2009 at 23:40</time>
+					</header>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</p>
+				</article>
+				<article>
+					<header>
+						<a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Barack Obama</a> on <time datetime="2009-06-29T23:59:00+01:00">June 29th 2009 at 23:59</time>
+					</header>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.</p>
+				</article>
+			</section>
+			<form action="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#" method="post">
+				<h3>Post a comment</h3>
+				<p>
+					<label for="name">Name</label>
+					<input name="name" id="name" type="text" required="">
+				</p>
+				<p>
+					<label for="email">E-mail</label>
+					<input name="email" id="email" type="email" required="">
+				</p>
+				<p>
+					<label for="website">Website</label>
+					<input name="website" id="website" type="url">
+				</p>
+				<p>
+					<label for="comment">Comment</label>
+					<textarea name="comment" id="comment" required=""></textarea>
+				</p>
+				<p><input type="submit" value="Post comment"></p>
+			</form>
+		</div>
+		<aside>
+			<section>
+				<header>
+					<h3>Categories</h3>
+				</header>
+				<div id="ex-spinner" class="spinner">
+		<input type="text" class="input-mini spinner-input">
+
+		<div class="spinner-buttons  btn-group btn-group-vertical">
+			<button class="btn spinner-up">
+				<i class="icon-chevron-up"></i>
+			</button>
+			<button class="btn spinner-down">
+				<i class="icon-chevron-down"></i>
+			</button>
+		</div>
+	</div>
+
+				<ul>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Lorem ipsum dolor</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Sit amet consectetur</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Adipisicing elit sed</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Do eiusmod tempor</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">Incididunt ut labore</a></li>
+				</ul>
+			</section>
+			<section>
+				<header>
+					<h3>Archives</h3>
+				</header>
+				<ul>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">December 2008</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">January 2009</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">February 2009</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">March 2009</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">April 2009</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">May 2009</a></li>
+					<li><a href="https://d2o0t5hpnwv4c1.cloudfront.net/373_html5/final/index.html#">June 2009</a></li>
+				</ul>
+			</section>
+		</aside>
+	</div>
+	<footer>
+		<div>
+			<section id="about">
+				<header>
+					<h3>About</h3>
+				</header>
+				<p>text</p>
+			</section>
+			<section id="blogroll">
+				<header>
+					<h3>Blogroll</h3>
+				</header>
+				<p>text</p>
+			</section>
+			<section id="popular">
+				<header>
+					<h3>Popular</h3>
+				</header>
+				<p>text</p>
+			</section>
+		</div>
+	</footer>
+	
+<div class="container">
+
+
+	<!-- CHECKBOX -->
+	<div>
+		<label class="checkbox checkbox-custom"><input type="checkbox" checked="checked"><i class="checkbox"></i>Custom: Checked Enabled<br/>Second Line</label>
+		<label class="checkbox checkbox-custom"><input type="checkbox" id="chk1"><i class="checkbox"></i>Custom: Unchecked Enabled</label>
+		<label class="checkbox checkbox-custom"><input type="checkbox" checked="checked" disabled="disabled"><i class="checkbox"></i>Custom: Checked Disabled</label>
+		<label class="checkbox checkbox-custom"><input type="checkbox" disabled="disabled"><i class="checkbox"></i>Custom: Unchecked Disabled</label>
+		<label class="checkbox"><input type="checkbox" checked="checked">Native: Checked Enabled<br/>Foo</label>
+		<label class="checkbox"><input type="checkbox">Native: Unchecked Enabled</label>
+		<label class="checkbox"><input type="checkbox" checked="checked" disabled="disabled">Native: Checked Disabled</label>
+		<label class="checkbox"><input type="checkbox" disabled="disabled">Native: Unchecked Disabled</label>
+		<button type="button" class="btn btn-mini" id="btnChkToggle">toggle</button>
+		<button type="button" class="btn btn-mini" id="btnChkDisable">disable</button>
+		<button type="button" class="btn btn-mini" id="btnChkEnable">enable</button>
+	</div>
+
+
+	<!-- RADIO -->
+	<div>
+		<label class="radio radio-custom"><input type="radio" name="radio1a" checked="checked"><i class="radio"></i>Custom: Checked Enabled</label>
+		<label class="radio radio-custom"><input type="radio" name="radio1a" id="radio1"><i class="radio"></i>Custom: Unchecked Enabled</label>
+		<label class="radio radio-custom"><input type="radio" name="radio1b" checked="checked" disabled="disabled"><i class="radio"></i>Custom: Checked Disabled</label>
+		<label class="radio radio-custom"><input type="radio" name="radio1b" disabled="disabled"><i class="radio"></i>Custom: Unchecked Disabled</label>
+		<label class="radio"><input type="radio" name="radio2a" checked="checked">Native: Checked Enabled</label>
+		<label class="radio"><input type="radio" name="radio2a">Native: Unchecked Enabled</label>
+		<label class="radio"><input type="radio" name="radio2b" checked="checked" disabled="disabled">Native: Checked Disabled</label>
+		<label class="radio"><input type="radio" name="radio2b" disabled="disabled">Native: Unchecked Disabled</label>
+		<button type="button" class="btn btn-mini" id="btnRadioDisable">disable</button>
+		<button type="button" class="btn btn-mini" id="btnRadioEnable">enable</button>
+	</div>
+
+	<!-- COMBOBOX -->
+	<div>
+		<div id="MyCombobox" class="input-append dropdown combobox">
+			<input class="span2" type="text">
+			<button class="btn" data-toggle="dropdown"><i class="caret"></i></button>
+			<ul class="dropdown-menu">
+				<li data-value="1" data-foo="bar"><a href="#">One</a></li>
+				<li data-value="2"><a href="#">Two</a></li>
+				<li data-value="3" data-selected="true"><a href="#">Three</a></li>
+				<li data-value="4" data-fizz="buzz"><a href="#">Four</a></li>
+			</ul>
+		</div>
+        <br/>
+		<input id="btnComboboxGetSelectedItem" type="button" class="btn btn-mini" value="log item"/>
+		<input id="btnComboboxSelectByValue" type="button" class="btn btn-mini" value="set by value"/>
+		<input id="btnComboboxSelectByIndex" type="button" class="btn btn-mini" value="set by index"/>
+		<input id="btnComboboxSelectByText" type="button" class="btn btn-mini" value="set by text"/>
+		<input id="btnComboboxSelectBySelector" type="button" class="btn btn-mini" value="set by selector"/>
+		<input id="btnComboboxDisable" type="button" class="btn btn-mini" value="disable"/>
+		<input id="btnComboboxEnable" type="button" class="btn btn-mini" value="enable"/>
+	</div>
+
+
+	<!-- SEARCH CONTROL -->
+	<div>
+		<div id="MySearch" class="input-append search">
+			<input type="text" class="input-medium" placeholder="Search">
+			<button class="btn"><i class="icon-search"></i></button>
+		</div>
+        <br/>
+        <input id="btnSearchDisable" type="button" class="btn btn-mini" value="disable"/>
+        <input id="btnSearchEnable" type="button" class="btn btn-mini" value="enable"/>
+	</div>
+
+	<!-- PILLBOX -->
+	<div>
+		<div id="MyPillbox" class="pillbox">
+			<ul>
+				<li data-value="foo">Item One</li>
+				<li class="status-success">Item Two</li>
+				<li class="status-warning">Item Three</li>
+				<li class="status-important">Item Four</li>
+				<li class="status-info">Item Five</li>
+				<li class="status-success">Item Six</li>
+				<li>Item Seven</li>
+			</ul>
+		</div>
+
+		<input type="button" class="btn btn-mini" id="btnAdd" value="add">
+		<input type="button" class="btn btn-mini" id="btnRemove" value="remove">
+		<input type="button" class="btn btn-mini" id="btnItems" value="log items to console">
+	</div>
+
+
+	<!-- SPINNER -->
+	<div id="ex-spinner" class="spinner">
+		<input type="text" class="input-mini spinner-input">
+
+		<div class="spinner-buttons  btn-group btn-group-vertical">
+			<button class="btn spinner-up">
+				<i class="icon-chevron-up"></i>
+			</button>
+			<button class="btn spinner-down">
+				<i class="icon-chevron-down"></i>
+			</button>
+		</div>
+	</div>
+
+
+	<!-- DATAGRID -->
+	<table id="MyGrid" class="table table-bordered datagrid">
+
+		<thead>
+		<tr>
+			<th>
+				<span class="datagrid-header-title">Geographic Data Sample</span>
+
+				<div class="datagrid-header-left">
+					<div class="input-append search datagrid-search">
+						<input type="text" class="input-medium" placeholder="Search">
+						<button class="btn"><i class="icon-search"></i></button>
+					</div>
+				</div>
+				<div class="datagrid-header-right">
+					<div class="select filter" data-resize="auto">
+						<button data-toggle="dropdown" class="btn dropdown-toggle">
+							<span class="dropdown-label"></span>
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li data-value="all" data-selected="true"><a href="#">All</a></li>
+							<li data-value="lt5m"><a href="#">Population &lt; 5M</a></li>
+							<li data-value="gte5m"><a href="#">Population &gt;= 5M</a></li>
+						</ul>
+					</div>
+				</div>
+			</th>
+		</tr>
+		</thead>
+
+		<tfoot>
+		<tr>
+			<th>
+				<div class="datagrid-footer-left" style="display:none;">
+					<div class="grid-controls">
+						<span>
+							<span class="grid-start"></span> -
+							<span class="grid-end"></span> of
+							<span class="grid-count"></span>
+						</span>
+						<div class="select grid-pagesize" data-resize="auto">
+							<button data-toggle="dropdown" class="btn dropdown-toggle">
+								<span class="dropdown-label"></span>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li data-value="5" data-selected="true"><a href="#">5</a></li>
+								<li data-value="10"><a href="#">10</a></li>
+								<li data-value="20"><a href="#">20</a></li>
+								<li data-value="50"><a href="#">50</a></li>
+								<li data-value="100"><a href="#">100</a></li>
+							</ul>
+						</div>
+						<span>Per Page</span>
+					</div>
+				</div>
+				<div class="datagrid-footer-right" style="display:none;">
+					<div class="grid-pager">
+						<button type="button" class="btn grid-prevpage"><i class="icon-chevron-left"></i></button>
+						<span>Page</span>
+
+						<div class="input-append dropdown combobox">
+							<input class="span1" type="text">
+							<button class="btn" data-toggle="dropdown"><i class="caret"></i></button>
+							<ul class="dropdown-menu"></ul>
+						</div>
+						<span>of <span class="grid-pages"></span></span>
+						<button type="button" class="btn grid-nextpage"><i class="icon-chevron-right"></i></button>
+					</div>
+				</div>
+			</th>
+		</tr>
+		</tfoot>
+
+	</table>
+
+	<!-- STRETCH DATAGRID -->
+	<div style="height:250px;width:100%">
+		<table id="MyStretchGrid" class="table table-bordered datagrid">
+
+			<thead>
+			<tr>
+				<th>
+					<span class="datagrid-header-title">Geographic Data Sample</span>
+
+					<div class="datagrid-header-left">
+						<div class="input-append search datagrid-search">
+							<input type="text" class="input-medium" placeholder="Search">
+							<button class="btn"><i class="icon-search"></i></button>
+						</div>
+					</div>
+					<div class="datagrid-header-right">
+						<div class="select filter" data-resize="auto">
+							<button data-toggle="dropdown" class="btn dropdown-toggle">
+								<span class="dropdown-label"></span>
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li data-value="all" data-selected="true"><a href="#">All</a></li>
+								<li data-value="lt5m"><a href="#">Population &lt; 5M</a></li>
+								<li data-value="gte5m"><a href="#">Population &gt;= 5M</a></li>
+							</ul>
+						</div>
+					</div>
+				</th>
+			</tr>
+			</thead>
+
+			<tfoot>
+			<tr>
+				<th>
+					<div class="datagrid-footer-left" style="display:none;">
+						<div class="grid-controls">
+							<span>
+								<span class="grid-start"></span> -
+								<span class="grid-end"></span> of
+								<span class="grid-count"></span>
+							</span>
+							<div class="select grid-pagesize" data-resize="auto">
+								<button data-toggle="dropdown" class="btn dropdown-toggle">
+									<span class="dropdown-label"></span>
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li data-value="5" data-selected="true"><a href="#">5</a></li>
+									<li data-value="10"><a href="#">10</a></li>
+									<li data-value="20"><a href="#">20</a></li>
+									<li data-value="50"><a href="#">50</a></li>
+									<li data-value="100"><a href="#">100</a></li>
+								</ul>
+							</div>
+							<span>Per Page</span>
+						</div>
+					</div>
+					<div class="datagrid-footer-right" style="display:none;">
+						<div class="grid-pager">
+							<button type="button" class="btn grid-prevpage"><i class="icon-chevron-left"></i></button>
+							<span>Page</span>
+
+							<div class="input-append dropdown combobox">
+								<input class="span1" type="text">
+								<button class="btn" data-toggle="dropdown"><i class="caret"></i></button>
+								<ul class="dropdown-menu"></ul>
+							</div>
+							<span>of <span class="grid-pages"></span></span>
+							<button type="button" class="btn grid-nextpage"><i class="icon-chevron-right"></i></button>
+						</div>
+					</div>
+				</th>
+			</tr>
+			</tfoot>
+
+		</table>
+	</div>
+
+	<!-- SELECT -->
+	<div>
+		<div id="MySelect" class="select btn-group" data-resize="auto">
+			<button data-toggle="dropdown" class="btn dropdown-toggle"><span class="dropdown-label"></span><span
+					class="caret"></span></button>
+			<ul class="dropdown-menu">
+				<li data-value="1"><a href="#">One</a></li>
+				<li data-value="2"><a href="#">Two</a></li>
+				<li data-value="3" data-selected="true"><a href="#">Three</a></li>
+				<li data-value="4" data-fizz="buzz"><a href="#">Four</a></li>
+			</ul>
+		</div>
+
+		<br/>
+		<input id="getSelectedItem" type="button" class="btn btn-mini" value="log item"/>
+		<input id="selectByValue" type="button" class="btn btn-mini" value="set by value"/>
+		<input id="selectByIndex" type="button" class="btn btn-mini" value="set by index"/>
+		<input id="selectByText" type="button" class="btn btn-mini" value="set by text"/>
+		<input id="selectBySelector" type="button" class="btn btn-mini" value="set by selector"/>
+		<input id="enableSelect" type="button" class="btn btn-mini" value="enable"/>
+		<input id="disableSelect" type="button" class="btn btn-mini" value="disable"/>
+	</div>
+
+
+	<!-- TREE -->
+	<div id="ex-tree" class="tree">
+		<div class="tree-folder" style="display:none;">
+			<div class="tree-folder-header">
+				<i class="icon-folder-close"></i>
+
+				<div class="tree-folder-name"></div>
+			</div>
+			<div class="tree-folder-content"></div>
+			<div class="tree-loader" style="display:none">
+			</div>
+		</div>
+		<div class="tree-item" style="display:none;">
+			<i class="tree-dot"></i>
+
+			<div class="tree-item-name"></div>
+		</div>
+	</div>
+
+
+
+	<!-- WIZARD -->
+	<div>
+		<div id="MyWizard" class="wizard">
+			<ul class="steps">
+				<li data-target="#step1" class="active"><span class="badge badge-info">1</span>Step 1<span class="chevron"></span></li>
+				<li data-target="#step2"><span class="badge">2</span>Step 2<span class="chevron"></span></li>
+				<li data-target="#step3"><span class="badge">3</span>Step 3<span class="chevron"></span></li>
+				<li data-target="#step4"><span class="badge">4</span>Step 4<span class="chevron"></span></li>
+				<li data-target="#step5"><span class="badge">5</span>Step 5<span class="chevron"></span></li>
+				<li data-target="#step6"><span class="badge">6</span>Step 6<span class="chevron"></span></li>
+				<li data-target="#step7"><span class="badge">7</span>Step 7<span class="chevron"></span></li>
+				<li data-target="#step8"><span class="badge">8</span>Step 8<span class="chevron"></span></li>
+				<li data-target="#step9"><span class="badge">9</span>Step 9<span class="chevron"></span></li>
+				<li data-target="#step10"><span class="badge">10</span>Step 10<span class="chevron"></span></li>
+			</ul>
+			<div class="actions">
+				<button class="btn btn-mini btn-prev"> <i class="icon-arrow-left"></i>Prev</button>
+				<button class="btn btn-mini btn-next" data-last="Finish">Next<i class="icon-arrow-right"></i></button>
+			</div>
+		</div>
+		<div class="step-content">
+			<div class="step-pane active" id="step1">This is step 1</div>
+			<div class="step-pane" id="step2">This is step 2</div>
+			<div class="step-pane" id="step3">This is step 3</div>
+			<div class="step-pane" id="step4">This is step 4</div>
+			<div class="step-pane" id="step5">This is step 5</div>
+			<div class="step-pane" id="step6">This is step 6</div>
+			<div class="step-pane" id="step7">This is step 7</div>
+			<div class="step-pane" id="step8">This is step 8</div>
+			<div class="step-pane" id="step9">This is step 9</div>
+			<div class="step-pane" id="step10">This is step 10</div>
+		</div>
+
+		<input type="button" class="btn btn-mini" id="btnWizardPrev" value="prev">
+		<input type="button" class="btn btn-mini" id="btnWizardNext" value="next">
+		<input type="button" class="btn btn-mini" id="btnWizardStep" value="current step">
+		<input type="button" class="btn btn-mini" id="btnWizardSetStep4" value="step 4">
+	</div>
+
+</div>
+
+
+	<!--
+    <script src="./bootstrap/assets/js/jquery.js"></script>
+    <script src="./bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min"></script>
+   -->
+</body>
+</html>

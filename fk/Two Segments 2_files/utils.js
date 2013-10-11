@@ -65,6 +65,7 @@ window.utils.captureMouse = function (element) {
     y -= offsetTop;
     
     mouse.x = x;
+	
     mouse.y = y;
     mouse.event = event;
   }, false);

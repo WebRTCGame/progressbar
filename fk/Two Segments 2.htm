@@ -16,14 +16,14 @@
     <script src="./Two Segments 2_files/segment.js"></script>
     <script src="./Two Segments 2_files/slider.js"></script>
     <script>
-    window.onload = function () {
 	nodes.once();
       var canvas = document.getElementById('canvas'),
           context = canvas.getContext('2d'),
           slider0 = new Slider(-360, 360, 0),
           slider1 = new Slider(-180, 180, 0),
 		  slider2 = new Slider(-180, 180, 0);
-      
+      var mouse = utils.captureMouse(canvas)
+	  
 	  segment0 = nodes.add(new Segment(120, 10,"red",true));
 	  segment1 = nodes.add(new Segment(60, 10,"blue"));
 	segment2 = nodes.add(new Segment(40, 10,"green"));
@@ -47,10 +47,15 @@
       slider2.y = 20;
       slider2.captureMouse(canvas);
       slider2.onchange = drawFrame;
+	
+    window.onload = function () {
+      drawFrame();     
+    };
+	
+		function drawFrame() {
+		
+		window.requestAnimationFrame(drawFrame, canvas);
 
-      drawFrame();
-      
-      function drawFrame () {
         context.clearRect(0, 0, canvas.width, canvas.height);
         
         //segment0.rotation = slider0.value * Math.PI / 180;
@@ -60,14 +65,20 @@
 		
         //segment1.rotation = segment0.rotation + (slider1.value * Math.PI / 180);
         nodes.each(function(x){x.draw(context)});
+		nodes.each(function(x){
+			context.moveTo(mouse.x, mouse.y);
+	context.lineTo(x.x, x.y);
+	context.stroke();
+	
+		});
         //segment0.draw(context);
         //segment1.draw(context);
 		
         slider0.draw(context);
         slider1.draw(context);
 		slider2.draw(context);
-      }
-    };
+	};
+		
     </script>
   
 
