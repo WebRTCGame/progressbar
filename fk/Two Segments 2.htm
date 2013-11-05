@@ -25,13 +25,18 @@
       var mouse = utils.captureMouse(canvas)
 	  
 	  segment0 = nodes.add(new Segment(120, 10,"red",true));
+	  segment0.captureMouse(canvas);
 	  segment1 = nodes.add(new Segment(60, 10,"blue"));
+	  segment1.captureMouse(canvas);
 	segment2 = nodes.add(new Segment(40, 10,"green"));
+	segment2.captureMouse(canvas);
 	  
       segment0.x = 100;
       segment0.y = 100;
 	  segment1.setParent(segment0);
 		segment2.setParent(segment1);
+		
+		nodes.select(segment1);
 		
       slider0.x = 320;
       slider0.y = 20;
@@ -56,8 +61,11 @@
 		
 		window.requestAnimationFrame(drawFrame, canvas);
 
+		//segment0.captureMouse(canvas);
+//segment1.captureMouse(canvas);
+//segment2.captureMouse(canvas);
         context.clearRect(0, 0, canvas.width, canvas.height);
-        
+        	
         //segment0.rotation = slider0.value * Math.PI / 180;
 		segment0.update(slider0.value * Math.PI / 180);
 		segment1.update(slider1.value * Math.PI / 180);
@@ -66,11 +74,33 @@
         //segment1.rotation = segment0.rotation + (slider1.value * Math.PI / 180);
         nodes.each(function(x){x.draw(context)});
 		nodes.each(function(x){
+		context.rect(x.savedBounds.x,x.savedBounds.y,x.savedBounds.width,x.savedBounds.height);
+		});
+		context.stroke();
+		var seg1dist = window.utils.dotLineLength(mouse.x,mouse.y,segment1.x,segment1.y,segment1.savedPin.x,segment1.savedPin.y,true);
+		//console.log(window.utils.dotLineLength(mouse.x,mouse.y,segment1.x,segment1.y,segment1.savedPin.x,segment1.savedPin.y,true));
+		context.save();
+			context.beginPath();
+	context.arc(mouse.x, mouse.y, 2, 0, (Math.PI * 2), true);
+	context.closePath();
+	//context.rect(segment1.x,segment1.y,segment1.getPin().x - segment1.x,segment1.getPin().y - segment1.y);
+	context.stroke();
+	if (seg1dist < 5) {
+	mouse.onMouseDown = function(){
+	console.log("booger");
+	};
+	context.fill();
+	}
+	context.restore();
+		/*
+		nodes.each(function(x){
 			context.moveTo(mouse.x, mouse.y);
 	context.lineTo(x.x, x.y);
 	context.stroke();
 	
 		});
+		*/
+	
         //segment0.draw(context);
         //segment1.draw(context);
 		

@@ -1,6 +1,8 @@
 function Segment(width, height, color, isRoot) {
+
 	this.id = 0; //(isRoot === true ? 0 : genGuid);
 	this.isRoot = isRoot;
+	
 	if (!this.isRoot) {
 		this.id = genGuid()
 	}
@@ -10,7 +12,10 @@ function Segment(width, height, color, isRoot) {
 	this.ikWeight = 0.25;
 	this.ikUseLOC = false;
 	this.ikLOCRH = true;
-	this.ikPoint = {x:0,y:0};
+	this.ikPoint = {
+		x : 0,
+		y : 0
+	};
 	this.width = width;
 	this.height = height;
 	//this.vx = 0;
@@ -30,6 +35,21 @@ function Segment(width, height, color, isRoot) {
 	this.imageFit = false;
 	this.imageRot = true;
 	this.selected = false;
+	this.highlight = false;
+	this.boundingPoly = [];
+	this.savedPin = {
+		x : 0,
+		y : 0
+	};
+	this.savedBounds = {
+		x : 0,
+		y : 0,
+		width : 0,
+		height : 0
+	};
+	this.distBounds = 1000;
+	this.rotateImage = new Image();
+	this.rotateImage.src = "rotate.png";
 	
 	function S4() {
 		return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -71,6 +91,15 @@ Segment.prototype.update = function (iAngle) {
 
 		this.rotation = this.selfAngle;
 	}
+	this.savedPin = this.getPin();
+	this.savedBounds = {
+		x : this.x,
+		y : this.y,
+		width : this.savedPin.x - this.x,
+		height : this.savedPin.y - this.y
+	};
+	var self = this;
+	this.distBounds = window.utils.dotLineLength(mouse.x,mouse.y,self.x,self.y,self.savedPin.x,self.savedPin.y,true);
 };
 
 Segment.prototype.draw = function (context) {
@@ -84,6 +113,7 @@ Segment.prototype.draw = function (context) {
 	cr = h / 2; //corner radius
 
 
+
 	context.save();
 	context.translate(this.x, this.y);
 	context.rotate(this.rotation);
@@ -91,6 +121,17 @@ Segment.prototype.draw = function (context) {
 
 	context.lineWidth = this.lineWidth;
 	context.fillStyle = this.color;
+
+	context.moveTo(0, 0);
+	//var pinPoint = this.getPin();
+	context.lineTo(this.width, 0);
+	context.rect(0, -cr, this.width, 10);
+
+	if (this.highlight) {
+		context.fill();
+	}
+	context.stroke();
+	/*
 	context.beginPath();
 	context.moveTo(0, -cr);
 	context.lineTo(d - 2 * cr, -cr);
@@ -102,8 +143,9 @@ Segment.prototype.draw = function (context) {
 	context.lineTo(-cr, 0);
 	context.quadraticCurveTo(-cr, -cr, 0, -cr);
 	context.closePath();
-	context.fill();
 
+	context.fill();
+	 */
 	if (this.lineWidth > 0) {
 		context.stroke();
 	}
@@ -121,49 +163,54 @@ Segment.prototype.draw = function (context) {
 
 	context.restore();
 
-	context.save();
-	context.translate(this.x, this.y);
-	context.rotate(this.rotation);
-	context.rect(0, -this.height*2, this.width, 10);
-	var grd = context.createLinearGradient(0, -this.height*2, this.width, 10);
-	grd.addColorStop(0, 'red');
-	grd.addColorStop(this.fkWeight, 'rgba(0,0,0,0)');
-	context.fillStyle = grd;
-	context.fill();
-	context.restore();
+	if (this.selected) {
 	
-	context.save();
-	context.translate(this.x, this.y);
-	context.rotate(this.rotation);
-	context.rect(0, this.height, this.width, 10);
-	var grd = context.createLinearGradient(0, this.height, this.width, 10);
-	grd.addColorStop(0, 'blue');
-	grd.addColorStop(this.ikWeight, 'rgba(0,0,0,0)');
-	context.fillStyle = grd;
-	context.fill();
-	context.restore();
+	context.drawImage(this.rotateImage,this.x - 20,this.y - 20,20,20);
 	
-	
-	
-	context.save();
-	context.translate(this.x, this.y);
+		context.save();
+		context.translate(this.x, this.y);
+		context.rotate(this.rotation);
+		context.rect(0, -this.height * 2, this.width, 10);
+		var grd = context.createLinearGradient(0, -this.height * 2, this.width, 10);
+		grd.addColorStop(0, 'red');
+		grd.addColorStop(this.fkWeight, 'rgba(0,0,0,0)');
+		context.fillStyle = grd;
+		context.fill();
+		context.restore();
 
-	if (!this.isRoot) {
-		context.rotate(this.getParent().rotation * this.fkWeight);
-
+		context.save();
+		context.translate(this.x, this.y);
+		context.rotate(this.rotation);
+		context.rect(0, this.height, this.width, 10);
+		var grd = context.createLinearGradient(0, this.height, this.width, 10);
+		grd.addColorStop(0, 'blue');
+		grd.addColorStop(this.ikWeight, 'rgba(0,0,0,0)');
+		context.fillStyle = grd;
+		context.fill();
+		context.restore();
 	}
-	context.beginPath();
 
-	context.arc(0, 0, this.width, this.angleConstraintMin * (Math.PI / 180), this.angleConstrainttMax * (Math.PI / 180), false);
+	if (this.selected) {
+		context.save();
+		context.translate(this.x, this.y);
 
-	context.lineWidth = 1;
-	context.strokeStyle = 'rgba(0,0,0,0.25)';
-	context.fillStyle = 'rgba(255,255,0,.1)';
-	context.stroke();
-	context.fill();
-	context.closePath();
-	context.restore();
+		if (!this.isRoot) {
+			context.rotate(this.getParent().rotation * this.fkWeight);
 
+		}
+
+		context.beginPath();
+		context.arc(0, 0, this.width, this.angleConstraintMin * (Math.PI / 180), this.angleConstrainttMax * (Math.PI / 180), false);
+
+		context.lineWidth = 1;
+		context.strokeStyle = 'rgba(0,0,0,0.25)';
+		context.fillStyle = 'rgba(255,255,0,.1)';
+		context.stroke();
+		context.fill();
+		context.closePath();
+
+		context.restore();
+	}
 };
 
 Segment.prototype.getPin = function () {
@@ -171,4 +218,54 @@ Segment.prototype.getPin = function () {
 		x : this.x + Math.cos(this.rotation) * this.width,
 		y : this.y + Math.sin(this.rotation) * this.width
 	};
+};
+
+Segment.prototype.captureMouse = function (element) {
+	
+	var self = this,
+	mouse = utils.captureMouse(element);
+	//bounds = {},
+	//dist = 1000;
+
+	//setHandleBounds();
+
+	element.addEventListener('mousedown', function () {
+	//var dist = window.utils.dotLineLength(mouse.x,mouse.y,self.x,self.y,self.savedPin.x,self.savedPin.y,true);
+		if (self.distBounds < 5){
+		//if (utils.containsPoint(bounds, mouse.x, mouse.y)) {
+		console.log("segment mouse down");
+			element.addEventListener('mouseup', onMouseUp, false);
+			element.addEventListener('mousemove', onMouseMove, false);
+		//}
+		}
+		
+	}, false);
+
+	function onMouseUp() {
+	console.log("segment mouse up");
+		element.removeEventListener('mousemove', onMouseMove, false);
+		element.removeEventListener('mouseup', onMouseUp, false);
+		nodes.unSelectAll();
+		self.selected = true;
+		//setHandleBounds();
+		//nodes.select(self);
+	};
+
+	function onMouseMove() {
+	console.log("segment mouse move");
+		//var pos_y = mouse.y - self.y;
+		//self.handleY = Math.min(self.height - self.handleHeight, Math.max(pos_y, 0));
+		//self.updateValue();
+	};
+/*
+	function setHandleBounds() {
+	dist = window.utils.dotLineLength(mouse.x,mouse.y,self.x,self.y,self.savedPin.x,self.savedPin.y,true);
+	
+	bounds.x = self.x;
+		bounds.y = self.y + self.handleY;
+		bounds.width = self.width;
+		bounds.height = self.handleHeight;
+		
+	};
+	*/
 };
