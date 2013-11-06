@@ -15,6 +15,7 @@
     <script src="./Two Segments 2_files/utils.js"></script>
     <script src="./Two Segments 2_files/segment.js"></script>
     <script src="./Two Segments 2_files/slider.js"></script>
+	<script src="./Two Segments 2_files/floater.js"></script>
     <script>
 	nodes.once();
       var canvas = document.getElementById('canvas'),
@@ -37,6 +38,11 @@
 		segment2.setParent(segment1);
 		
 		nodes.select(segment1);
+		
+		var floater = new Floater(-75,75,0,"rotate.png",segment1.id);
+		floater.x = 20;
+		floater.y = 20;
+		floater.captureMouse(canvas);
 		
       slider0.x = 320;
       slider0.y = 20;
@@ -68,7 +74,7 @@
         	
         //segment0.rotation = slider0.value * Math.PI / 180;
 		segment0.update(slider0.value * Math.PI / 180);
-		segment1.update(slider1.value * Math.PI / 180);
+		//segment1.update(slider1.value * Math.PI / 180);
 		segment2.update(slider2.value * Math.PI / 180);
 		
         //segment1.rotation = segment0.rotation + (slider1.value * Math.PI / 180);
@@ -86,9 +92,7 @@
 	//context.rect(segment1.x,segment1.y,segment1.getPin().x - segment1.x,segment1.getPin().y - segment1.y);
 	context.stroke();
 	if (seg1dist < 5) {
-	mouse.onMouseDown = function(){
-	console.log("booger");
-	};
+	
 	context.fill();
 	}
 	context.restore();
@@ -103,7 +107,7 @@
 	
         //segment0.draw(context);
         //segment1.draw(context);
-		
+		floater.draw(context);
         slider0.draw(context);
         slider1.draw(context);
 		slider2.draw(context);

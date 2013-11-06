@@ -192,6 +192,7 @@ Segment.prototype.draw = function (context) {
 
 	if (this.selected) {
 		context.save();
+		context.globalAlpha = 0.1;
 		context.translate(this.x, this.y);
 
 		if (!this.isRoot) {
@@ -202,12 +203,12 @@ Segment.prototype.draw = function (context) {
 		context.beginPath();
 		context.arc(0, 0, this.width, this.angleConstraintMin * (Math.PI / 180), this.angleConstrainttMax * (Math.PI / 180), false);
 
-		context.lineWidth = 1;
-		context.strokeStyle = 'rgba(0,0,0,0.25)';
-		context.fillStyle = 'rgba(255,255,0,.1)';
+		context.lineWidth = 10;
+		context.strokeStyle = 'rgba(0,0,0,1)';
+		//context.fillStyle = 'rgba(255,255,0,.1)';
 		context.stroke();
-		context.fill();
-		context.closePath();
+		//context.fill();
+		//context.closePath();
 
 		context.restore();
 	}
